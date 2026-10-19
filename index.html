@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>부서 관리 교육 환경개선 사업</title>
+<style>
+  :root {
+    --ink: #1a211c;
+    --muted: #5c675f;
+    --line: #d5dbd4;
+    --line-strong: #b7c2b8;
+    --green: #0e3b2e;
+    --green-mid: #1d5c45;
+    --paper: #fffdf9;
+    --wash: #f4f7f3;
+    --sand: #f7f1e6;
+    --sand-ink: #6e4a28;
+    --gold: #a6843d;
+    --bg: #e7e2d8;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Malgun Gothic", "맑은 고딕", "Apple SD Gothic Neo", sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.58;
+    word-break: keep-all;
+  }
+  .toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 22px;
+    background: var(--green);
+    color: #f4f7f4;
+  }
+  .toolbar p { margin: 0; font-size: 12px; line-height: 1.45; color: #d5e3db; }
+  .toolbar strong { color: #fff; }
+  .toolbar button {
+    border: 0;
+    background: #f3ead2;
+    color: var(--green);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 10px 16px;
+    cursor: pointer;
+  }
+  .sheet {
+    width: 210mm;
+    margin: 22px auto 40px;
+    background: var(--paper);
+    box-shadow: 0 10px 30px rgba(30, 36, 28, 0.12);
+    padding: 16mm 15mm 18mm;
+  }
+  .letterhead {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 16px;
+    border-bottom: 2.5px solid var(--green);
+    padding-bottom: 10px;
+    margin-bottom: 14px;
+  }
+  .univ { margin: 0; font-size: 12px; letter-spacing: 0.08em; color: var(--green-mid); font-weight: 700; }
+  .org { margin: 2px 0 0; font-size: 13px; color: var(--muted); }
+  .doc-kicker { margin: 0; text-align: right; font-size: 11px; color: var(--muted); }
+  h1 {
+    margin: 14px 0 8px;
+    font-size: 20px;
+    line-height: 1.35;
+    letter-spacing: -0.02em;
+    font-weight: 800;
+    color: var(--green);
+  }
+  .meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 0 0 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 10.5px;
+  }
+  .lead {
+    margin: 0 0 18px;
+    padding: 10px 12px;
+    background: var(--wash);
+    border-left: 3px solid var(--gold);
+  }
+  h2 {
+    margin: 16px 0 6px;
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--green);
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+  h3 {
+    margin: 12px 0 4px;
+    font-size: 12.5px;
+    line-height: 1.4;
+    color: var(--green-mid);
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+  h4 {
+    margin: 10px 0 4px;
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--green);
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+  p { margin: 0 0 8px; }
+  ul { margin: 4px 0 10px; padding-left: 1.2em; }
+  li { margin: 2px 0; }
+  .check { margin: 8px 0 12px; padding-left: 0; list-style: none; }
+  .check li { padding-left: 1.3em; position: relative; }
+  .check li::before { content: "□"; position: absolute; left: 0; }
+  .note { color: var(--muted); font-size: 10px; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 6px 0 12px;
+    font-size: 10px;
+    line-height: 1.5;
+  }
+  th, td {
+    border: 1px solid var(--line-strong);
+    padding: 5px 7px;
+    vertical-align: top;
+    text-align: left;
+  }
+  thead { display: table-header-group; }
+  thead th {
+    background: var(--green);
+    color: #fff;
+    font-weight: 700;
+    border-color: var(--green);
+  }
+  tbody th {
+    background: var(--wash);
+    color: var(--green);
+    font-weight: 700;
+  }
+  .num, .pts, .center { text-align: center; }
+  .pts { font-variant-numeric: tabular-nums; white-space: nowrap; width: 64px; }
+  tr { break-inside: avoid; page-break-inside: avoid; }
+  table.score td ul { margin: 4px 0 0; padding-left: 1.15em; }
+  table.score td li { margin: 1px 0; }
+  table.score tbody th { width: auto; vertical-align: middle; }
+  .sum td { background: #e7f0ea; font-weight: 700; }
+  .callout {
+    margin: 8px 0 12px;
+    padding: 10px 12px;
+    background: var(--sand);
+    border-left: 3px solid var(--sand-ink);
+  }
+  .callout strong { color: var(--sand-ink); }
+  .flow, .how {
+    display: flex;
+    align-items: stretch;
+    gap: 16px;
+    margin: 8px 0 12px;
+    padding: 0;
+    list-style: none;
+  }
+  .flow li, .how li {
+    position: relative;
+    flex: 1;
+    margin: 0;
+    padding: 8px 8px 9px;
+    background: var(--wash);
+    border: 1px solid var(--line-strong);
+    text-align: center;
+  }
+  .flow li::after, .how li::after {
+    content: "";
+    position: absolute;
+    right: -12px;
+    top: 50%;
+    margin-top: -6px;
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-left: 8px solid var(--green);
+  }
+  .flow li:last-child::after, .how li:last-child::after { display: none; }
+  .flow strong, .how strong { display: block; color: var(--green); font-size: 12px; line-height: 1.35; }
+  .flow span, .how span, .how a { display: block; margin-top: 3px; font-size: 10px; line-height: 1.4; color: var(--muted); }
+  .flow .who, .how .who { color: var(--sand-ink); font-weight: 700; }
+  figure.diag { margin: 8px 0 12px; }
+  figure.diag figcaption {
+    margin: 0 0 6px;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--green);
+  }
+  figure.diag .how { margin-top: 0; }
+  .how a, a.go { color: var(--green); font-weight: 700; text-decoration: none; }
+  .foot {
+    margin-top: 18px;
+    padding-top: 8px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 10px;
+  }
+  @page { size: A4; margin: 13mm 12mm 14mm; }
+  @media print {
+    body { background: #fff; }
+    .toolbar { display: none !important; }
+    .sheet { width: auto; margin: 0; box-shadow: none; padding: 0; }
+    .flow, .how { gap: 12px; }
+  }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <p>부서 관리 교육 환경개선 사업</p>
+  <button type="button" onclick="window.print()">인쇄</button>
+</div>
+<article class="sheet">
+  <header class="letterhead">
+    <div>
+      <p class="univ">삼육대학교</p>
+      <p class="org">기획처</p>
+    </div>
+    <p class="doc-kicker">2026년 10월 19일</p>
+  </header>
+
+  <h1>부서 관리 교육 환경개선 사업</h1>
+
+  <p class="lead">학생이 수업과 학업에 쓰는 공간과 기자재 가운데, 부서가 관리하는 곳을 정비하는 사업임. 재학생 만족도 조사에서 개선이 필요하다고 확인된 강의시설과 노후 불편을 부서가 신청하면, 심의를 거쳐 선정함.</p>
+
+  <h2>1. 목적 및 필요성</h2>
+  <h3>1-1. 목적</h3>
+  <p>부서가 관리하는 수업·실습·학습 공간과 그 공간의 기자재를 정비하여, 학생이 학기 중에 실제로 이용하는 교육환경을 개선하는 데 목적이 있음.</p>
+
+  <h3>1-2. 필요성</h3>
+  <p>재학생 만족도 조사에서 교육환경, 특히 강의시설과 기자재에 대한 개선 요구가 여러 해 이어졌음. 아래 그림은 2022년부터 2025년까지의 조사 결과와, 같은 기간 학생 면담에서 나온 현장 요구를 시간 순으로 정리한 것임.</p>
+  <figure class="diag">
+    <figcaption>그림 1. 재학생 만족도 조사·면담으로 본 교육환경 개선 요구</figcaption>
+    <ol class="how">
+      <li><strong>2022 조사</strong><span>응답 1,513명</span><span class="who">우선 개선 요구</span><span>강의시설 · 규모 · 기자재 · 편의</span></li>
+      <li><strong>2024 조사</strong><span>응답 1,627명</span><span class="who">중점개선 요구</span><span>교육환경 65.72점</span><span>강의시설 59.70 · 기자재 58.48</span></li>
+      <li><strong>2025 조사</strong><span>응답 2,992명</span><span class="who">점진개선 요구</span><span>교육환경 68.49점</span><span>전산실습실 63.39점은 중점개선</span></li>
+      <li><strong>학생 면담</strong><span>같은 기간</span><span class="who">현장 개선 요구</span><span>노후 강의실, 냉·난방, 누수, 안전</span></li>
+    </ol>
+  </figure>
+  <ul>
+    <li>2022년 조사(1,513명)에서는 강의시설·규모·기자재·편의가 우선 손봐야 할 과제로 확인되었음. 2024년(1,627명)에는 교육환경 만족도가 65.72점이었고, 그중 강의시설 59.70점·기자재 58.48점은 중점적으로 개선해야 할 수준이었음.</li>
+    <li>2025년 조사는 2,992명으로 늘었고 교육환경 점수는 68.49점으로 조금 올랐음. 그러나 전산실습실은 63.39점으로 중점개선 요구에 남아 있음. 전체 점수가 소폭 상승했다고 해서 시설과 기자재의 불편이 해소된 것은 아님.</li>
+    <li>면담에서도 노후 강의실, 냉·난방 불량, 누수, 안전 문제가 반복하여 제기되었음. 이러한 공간과 기자재는 학과 전용이 아니라 관리 부서가 맡고 있는 경우가 많아, 해당 부서가 건별로 신청하여 정비할 사업이 필요함.</li>
+  </ul>
+
+  <h2>2. 개요</h2>
+  <p>노후·고장으로 수업과 학업에 지장이 있는 공간과 기자재를, 관리 부서가 건별로 신청하여 심의 후 정비하는 사업임.</p>
+
+  <h2>3. 세부내용</h2>
+  <h3>3-1. 대상</h3>
+  <ul>
+    <li>부서가 관리하는 공간의 환경개선</li>
+    <li>그 공간에서 쓰는 기자재의 교체·수리·보강</li>
+  </ul>
+  <h3>3-2. 선정방법</h3>
+  <p>제출한 제안 내용을 기준으로 대학혁신위원회에서 심사를 진행함.</p>
+  <h4>(1) 평가 구성</h4>
+  <table class="score">
+    <thead>
+      <tr>
+        <th style="width:18%">평가 항목</th>
+        <th class="pts">배점</th>
+        <th>보는 내용</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th>긴급성</th>
+        <td class="pts">40점</td>
+        <td>안전·법정 기준, 이용 중단, 고장, 노후의 정도</td>
+      </tr>
+      <tr>
+        <th>직접성</th>
+        <td class="pts">30점</td>
+        <td>수업·실습·학생 학업에 직접 쓰이는 정도</td>
+      </tr>
+      <tr>
+        <th>계획적절성</th>
+        <td class="pts">30점</td>
+        <td>연차별 계획 10점, 견적 10점, 성과지표 10점</td>
+      </tr>
+      <tr class="sum">
+        <td>한 건 합계</td>
+        <td class="pts">100점</td>
+        <td>건마다 따로 매김. 부서 점수는 만들지 않음.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>(2) 긴급성 (40점)</h4>
+  <table class="score">
+    <thead>
+      <tr>
+        <th class="pts">배점</th>
+        <th>기준</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="pts">40점</td>
+        <td>안전·법정 기준 미달로 이용을 제한해야 하거나 이미 제한 중. 또는 수업·실습·학생 이용이 현재 불가능하거나, 학기 중 같은 고장으로 교육이 중단된 기록이 있음.</td>
+      </tr>
+      <tr>
+        <td class="pts">27점</td>
+        <td>고장·성능 저하·노후가 확인되고 교육에 지장이 있으나, 다른 공간·장비로 대체할 수 있음.</td>
+      </tr>
+      <tr>
+        <td class="pts">14점</td>
+        <td>지금은 이용할 수 있으나 내용연수 초과, 반복 수리, 뚜렷한 노후로 곧 지장이 예상됨.</td>
+      </tr>
+      <tr>
+        <td class="pts">5점</td>
+        <td>중단·고장 기록은 없고, 성능이나 편의 개선 요청에 가까움.</td>
+      </tr>
+      <tr>
+        <td class="pts">0점</td>
+        <td>상태 자료가 없음.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>(3) 직접성 (30점)</h4>
+  <table class="score">
+    <thead>
+      <tr>
+        <th class="pts">배점</th>
+        <th>기준</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="pts">30점</td>
+        <td>수업 또는 실험·실습에 직접 사용.</td>
+      </tr>
+      <tr>
+        <td class="pts">20점</td>
+        <td>열람, 스터디, 기초학습, 전산 실습처럼 학생이 학업을 위해 정기적으로 이용.</td>
+      </tr>
+      <tr>
+        <td class="pts">10점</td>
+        <td>학생 이용은 있으나 학기 중 이용이 간헐적임.</td>
+      </tr>
+      <tr>
+        <td class="pts">0점</td>
+        <td>직원 업무가 중심임.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>(4) 계획적절성 (30점)</h4>
+  <table class="score">
+    <thead>
+      <tr>
+        <th style="width:28%">보는 내용</th>
+        <th class="pts">배점</th>
+        <th>기준</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th>연차별 계획</th>
+        <td class="pts">10점</td>
+        <td>어느 해에 무엇을 할지가 있으면 10점. 없으면 0점.</td>
+      </tr>
+      <tr>
+        <th>견적</th>
+        <td class="pts">10점</td>
+        <td>금액과 그 근거가 있으면 10점. 없으면 0점.</td>
+      </tr>
+      <tr>
+        <th>성과지표</th>
+        <td class="pts">10점</td>
+        <td>개선 후 무엇을 보고 확인할지가 있으면 10점. 없으면 0점.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>4. 추진 과정</h2>
+  <p><a class="go" href="https://cho.syu.my/office-environment">제안서 작성 바로가기</a>로 들어간 뒤, 아래 순서로 진행함.</p>
+  <ol class="how">
+    <li><strong>제안서 양식</strong><span><a class="go" href="https://cho.syu.my/office-environment">cho.syu.my</a></span></li>
+    <li><strong>제안서 작성</strong><span>제안서 PDF저장</span></li>
+    <li><strong>제출</strong><span>2026년 11월 6일(금)</span><span>공문으로 제출(제안서 PDF 첨부)</span></li>
+    <li><strong>심의</strong><span>11월 9일(월)부터 2주</span><span class="who">대학혁신위원회</span></li>
+    <li><strong>최종선정</strong><span>심의 후 공문으로 안내</span></li>
+  </ol>
+  <p class="note">사정에 따라 일정이 바뀔 수 있음. 바뀔 경우 기획처가 따로 안내함.</p>
+
+  <h2>5. 작성</h2>
+  <ul>
+    <li>작성 화면: <a class="go" href="https://cho.syu.my">cho.syu.my</a> <a class="go" href="https://cho.syu.my/office-environment">[바로가기]</a>에서 「부서 관리 교육 환경개선 사업 신청」으로 들어가 작성함.</li>
+    <li>작성 방법: 부서명과 담당자를 적고, 기자재 또는 교육환경(공사)을 건별로 넣음. 건마다 긴급성, 직접성, 개선계획을 적고 견적 또는 단가를 붙인 뒤 저장하고, PDF로 받아 공문에 첨부함.</li>
+  </ul>
+
+  <p class="foot">삼육대학교 기획처 · 부서 관리 교육 환경개선 사업 · 문의 기획팀 조재림 (내선 3395, adventistcho@syu.ac.kr)</p>
+</article>
+</body>
+</html>
